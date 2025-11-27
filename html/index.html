@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPS Booster</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="fps-menu" class="menu-container">
+        <div class="menu-header">
+            <h2>🎮 FPS Booster</h2>
+            <span class="close-btn" onclick="closeMenu()">✕</span>
+        </div>
+        <div class="menu-content">
+            <p class="current-mode">Current: <span id="current-mode">Off</span></p>
+            <div class="button-grid">
+                <button class="mode-btn reset" onclick="setMode('reset')">
+                    <span class="icon">🔄</span>
+                    <span class="label">Reset</span>
+                    <span class="desc">Default settings</span>
+                </button>
+                <button class="mode-btn medium" onclick="setMode('medium')">
+                    <span class="icon">📊</span>
+                    <span class="label">Medium</span>
+                    <span class="desc">Balanced</span>
+                </button>
+                <button class="mode-btn low" onclick="setMode('low')">
+                    <span class="icon">⚡</span>
+                    <span class="label">Low</span>
+                    <span class="desc">Better FPS</span>
+                </button>
+                <button class="mode-btn ulow" onclick="setMode('ulow')">
+                    <span class="icon">🚀</span>
+                    <span class="label">Ultra Low</span>
+                    <span class="desc">Max FPS</span>
+                </button>
+            </div>
+        </div>
+        <div class="menu-footer">
+            <p>Press <kbd>F7</kbd> to toggle menu</p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 ---@diagnostic disable: trailing-space
 local loopType = nil
+local isMenuOpen = false
 
 -- Functions
 
@@ -39,6 +40,30 @@ end
 ---@param notify string
 local function notify(message)
     print(message)
+end
+
+-- NUI Functions
+local function openMenu()
+    isMenuOpen = true
+    SetNuiFocus(true, true)
+    SendNUIMessage({ type = 'show' })
+    if loopType then
+        SendNUIMessage({ type = 'updateMode', mode = loopType })
+    end
+end
+
+local function closeMenu()
+    isMenuOpen = false
+    SetNuiFocus(false, false)
+    SendNUIMessage({ type = 'hide' })
+end
+
+local function toggleMenu()
+    if isMenuOpen then
+        closeMenu()
+    else
+        openMenu()
+    end
 end
 
 ---@param type string
@@ -81,7 +106,20 @@ local function umfpsBooster(type)
         return
     end
     loopType = type
+    -- Update NUI with current mode
+    SendNUIMessage({ type = 'updateMode', mode = type })
 end
+
+-- NUI Callbacks
+RegisterNUICallback('setMode', function(data, cb)
+    umfpsBooster(data.mode)
+    cb('ok')
+end)
+
+RegisterNUICallback('closeMenu', function(_, cb)
+    closeMenu()
+    cb('ok')
+end)
 
 -- Commands
 
@@ -92,6 +130,13 @@ RegisterCommand("fps", function(_, args)
     end
     umfpsBooster(args[1])
 end, false)
+
+-- Keybind for NUI menu (F7)
+RegisterCommand("fpsmenu", function()
+    toggleMenu()
+end, false)
+
+RegisterKeyMapping("fpsmenu", "Toggle FPS Booster Menu", "keyboard", "F7")
 
 -- Main Loop
 
