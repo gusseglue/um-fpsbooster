@@ -4,9 +4,7 @@ let currentMode = 'Off';
 window.addEventListener('message', function(event) {
     const data = event.data;
     
-    if (data.type === 'toggle') {
-        toggleMenu();
-    } else if (data.type === 'show') {
+    if (data.type === 'show') {
         showMenu();
     } else if (data.type === 'hide') {
         hideMenu();
@@ -22,23 +20,18 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-function toggleMenu() {
-    const menu = document.getElementById('fps-menu');
-    if (menu.style.display === 'none' || menu.style.display === '') {
-        showMenu();
-    } else {
-        hideMenu();
-    }
-}
-
 function showMenu() {
     const menu = document.getElementById('fps-menu');
-    menu.style.display = 'block';
+    if (menu) {
+        menu.style.display = 'block';
+    }
 }
 
 function hideMenu() {
     const menu = document.getElementById('fps-menu');
-    menu.style.display = 'none';
+    if (menu) {
+        menu.style.display = 'none';
+    }
 }
 
 function closeMenu() {
@@ -77,7 +70,9 @@ function updateCurrentMode(mode) {
         'medium': 'Medium'
     };
     
-    modeDisplay.textContent = modeNames[mode] || mode;
+    if (modeDisplay) {
+        modeDisplay.textContent = modeNames[mode] || mode;
+    }
     updateActiveButton(mode);
 }
 

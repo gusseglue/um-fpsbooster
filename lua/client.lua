@@ -106,8 +106,10 @@ local function umfpsBooster(type)
         return
     end
     loopType = type
-    -- Update NUI with current mode
-    SendNUIMessage({ type = 'updateMode', mode = type })
+    -- Update NUI with current mode only if menu is open
+    if isMenuOpen then
+        SendNUIMessage({ type = 'updateMode', mode = type })
+    end
 end
 
 -- NUI Callbacks
