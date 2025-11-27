@@ -2,19 +2,31 @@
 + This is not a **graphics mod** or **pack**, it's a **script** and only works on the **server**<br>
 
 ## Usage
-+ **You can use command /fps 3 type of settings: Ultra Low, Low, Medium**
-
-
++ **You can use command /fps or press F7 to open the NUI menu**
 
 ```lua 
 Commands: /fps [type] (reset,ulow,low,medium)
+         /fpsmenu - Toggle the NUI menu
+Keybind:  F7 - Toggle the NUI menu
 ```
+
+## NUI Menu (v1.4.0)
+* Press **F7** to open/close the FPS Booster menu
+* Click on a mode to switch between Reset, Medium, Low, and Ultra Low
+* Press **ESC** or click the X button to close the menu
+* The menu shows your current active mode
 
 ## Fixed
 * Walking on freeze peds
 * Burst of lights at night
 * Police lights bug
 
+## Optimizations (v1.3.0)
+* Far shadow suppression for improved rendering performance
+* Vehicle trail and ped footstep track control
+* LOD scale override for better distance rendering
+* Shocking event suppression for reduced AI processing
+* NPC spawn rates remain unchanged for gameplay balance
 
 ## Tested
 * on a GeForce RTX 2060 (6gb) (All game settings high)

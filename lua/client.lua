@@ -1,5 +1,6 @@
 ---@diagnostic disable: trailing-space
 local loopType = nil
+local isMenuOpen = false
 
 -- Functions
 
@@ -31,9 +32,38 @@ local function setLights(distance, tweak)
     SetLightsCutoffDistanceTweak(tweak)
 end
 
+---@param suppress boolean
+local function setFarShadows(suppress)
+    SetFarShadowsSuppressed(suppress)
+end
+
 ---@param notify string
 local function notify(message)
     print(message)
+end
+
+-- NUI Functions
+local function openMenu()
+    isMenuOpen = true
+    SetNuiFocus(true, true)
+    SendNUIMessage({ type = 'show' })
+    if loopType then
+        SendNUIMessage({ type = 'updateMode', mode = loopType })
+    end
+end
+
+local function closeMenu()
+    isMenuOpen = false
+    SetNuiFocus(false, false)
+    SendNUIMessage({ type = 'hide' })
+end
+
+local function toggleMenu()
+    if isMenuOpen then
+        closeMenu()
+    else
+        openMenu()
+    end
 end
 
 ---@param type string
@@ -42,21 +72,33 @@ local function umfpsBooster(type)
         setShadowAndAir(true, true)
         setEntityTracker(true, true, 5.0, 5.0, 5.0)
         setLights(10.0, 10.0)
+        setFarShadows(false)
+        SetForceVehicleTrails(true)
+        SetForcePedFootstepsTracks(true)
         notify("Mode: Reset")
     elseif type == "ulow" then
         setShadowAndAir(false, false)
         setEntityTracker(true, false, 0.0, 0.0, 0.0)
         setLights(0.0, 0.0)
+        setFarShadows(true)
+        SetForceVehicleTrails(false)
+        SetForcePedFootstepsTracks(false)
         notify("Mode: Ultra Low")
     elseif type == "low" then
         setShadowAndAir(false, false)
         setEntityTracker(true, false, 0.0, 0.0, 0.0)
         setLights(5.0, 5.0)
+        setFarShadows(true)
+        SetForceVehicleTrails(false)
+        SetForcePedFootstepsTracks(false)
         notify("Mode: Low")
     elseif type == "medium" then
         setShadowAndAir(true, false)
         setEntityTracker(true, false, 5.0, 3.0, 3.0)
         setLights(3.0, 3.0)
+        setFarShadows(false)
+        SetForceVehicleTrails(true)
+        SetForcePedFootstepsTracks(true)
         notify("Mode: Medium")
     else
         notify("Usage: /fps [reset/ulow/low/medium]")
@@ -64,7 +106,22 @@ local function umfpsBooster(type)
         return
     end
     loopType = type
+    -- Update NUI with current mode only if menu is open
+    if isMenuOpen then
+        SendNUIMessage({ type = 'updateMode', mode = type })
+    end
 end
+
+-- NUI Callbacks
+RegisterNUICallback('setMode', function(data, cb)
+    umfpsBooster(data.mode)
+    cb('ok')
+end)
+
+RegisterNUICallback('closeMenu', function(_, cb)
+    closeMenu()
+    cb('ok')
+end)
 
 -- Commands
 
@@ -76,12 +133,23 @@ RegisterCommand("fps", function(_, args)
     umfpsBooster(args[1])
 end, false)
 
+-- Keybind for NUI menu (F7)
+RegisterCommand("fpsmenu", function()
+    toggleMenu()
+end, false)
+
+RegisterKeyMapping("fpsmenu", "Toggle FPS Booster Menu", "keyboard", "F7")
+
 -- Main Loop
 
 -- // Distance rendering and entity handler (need a revision)
 CreateThread(function()
     while true do
         if loopType == "ulow" then
+            --// Graphics optimizations for ultra low
+            SuppressShockingEventsNextFrame()
+            OverrideLodscaleThisFrame(0.5)
+            
             --// Find closest ped and set the alpha
             for _, ped in ipairs(GetGamePool('CPed')) do
                 if not IsEntityOnScreen(ped) then
@@ -114,6 +182,10 @@ CreateThread(function()
             SetDisableDecalRenderingThisFrame()
             RemoveParticleFxInRange(GetEntityCoords(PlayerPedId()), 10.0)
         elseif loopType == "low" then
+            --// Graphics optimizations for low
+            SuppressShockingEventsNextFrame()
+            OverrideLodscaleThisFrame(0.7)
+            
             --// Find closest ped and set the alpha
             for _, ped in ipairs(GetGamePool('CPed')) do
                 if not IsEntityOnScreen(ped) then
@@ -136,8 +208,8 @@ CreateThread(function()
                 else
                     if GetEntityAlpha(obj) == 0 then
                         SetEntityAlpha(obj, 255)
-                    elseif GetEntityAlpha(ped) ~= 210 then
-                        SetEntityAlpha(ped, 210)
+                    elseif GetEntityAlpha(obj) ~= 210 then
+                        SetEntityAlpha(obj, 210)
                     end
                 end
                 Wait(1)
