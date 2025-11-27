@@ -15,6 +15,12 @@ Commands: /fps [type] (reset,ulow,low,medium)
 * Burst of lights at night
 * Police lights bug
 
+## Optimizations (v1.3.0)
+* Far shadow suppression for improved rendering performance
+* Vehicle trail and ped footstep track control
+* LOD scale override for better distance rendering
+* Shocking event suppression for reduced AI processing
+* NPC spawn rates remain unchanged for gameplay balance
 
 ## Tested
 * on a GeForce RTX 2060 (6gb) (All game settings high)
